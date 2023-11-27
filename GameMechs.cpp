@@ -1,11 +1,14 @@
 #include "GameMechs.h"
 #include "MacUILib.h"
+#include <cstdlib>
 
 // Game mechanism constructor i.e. default game mode
 GameMechs::GameMechs()
 {
     input = 0; //no input at this stage
     exitFlag = false;
+    startflag = false; // Custom //
+    winflag = false; // Custom //
     boardSizeX = 30; //default board size
     boardSizeY = 15;
     loseFlag = false;
@@ -16,6 +19,8 @@ GameMechs::GameMechs(int boardX, int boardY)
 {
     input = 0; 
     exitFlag = false;
+    startflag = false; // Custom //
+    winflag = false; // Custom //
     boardSizeX = boardX;
     boardSizeY = boardY;
     loseFlag = false;
@@ -47,6 +52,9 @@ char GameMechs::getInput()
     if(MacUILib_hasChar()) 
     {
         input = MacUILib_getChar();
+        if (input == 27){
+            setExitTrue();
+        }
     }
     return input;
 }
@@ -61,7 +69,6 @@ int GameMechs::getBoardSizeY()
     return boardSizeY;
 }
 
-
 void GameMechs::setExitTrue()
 {
     exitFlag = true;
@@ -73,6 +80,26 @@ void GameMechs::setLoseFlag()
     loseFlag = true;
 }
 
+void GameMechs::setStartFlag() // Added
+{
+    startflag = true;
+}
+
+bool GameMechs::getStartFlagStatus() // Added
+{
+    return startflag;
+}
+
+void GameMechs::setWinFlag() // Added
+{
+    winflag = true;
+}
+
+bool GameMechs::getWinFlagStatus() // Added
+{
+    return winflag;
+}
+
 void GameMechs::setInput(char this_input)
 {
     input = this_input;
@@ -80,7 +107,7 @@ void GameMechs::setInput(char this_input)
 
 void GameMechs::clearInput()
 {
-    input = ' ';
+    input = '\0';
 }
 
 int GameMechs::getScore()

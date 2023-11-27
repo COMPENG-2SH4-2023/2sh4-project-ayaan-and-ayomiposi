@@ -22,11 +22,12 @@ class GameMechs
         char input;
         bool exitFlag;
         bool loseFlag;
+        bool startflag; // Custom //
+        bool winflag;
         int score;
         
         int boardSizeX;
         int boardSizeY;
-        //objPos foodPos;
 
     public:
         GameMechs();
@@ -36,6 +37,10 @@ class GameMechs
         void setExitTrue();
         bool getLoseFlagStatus();
         void setLoseFlag();
+        void setStartFlag(); // Added
+        bool getStartFlagStatus(); // Added
+        void setWinFlag(); // Added
+        bool getWinFlagStatus(); // Added
 
         char getInput();
         void setInput(char this_input);
@@ -46,8 +51,6 @@ class GameMechs
 
         int getScore();
         void incrementScore();
-
-
 };
 
 #endif

@@ -85,6 +85,7 @@ void Player::movePlayer()
         }
     }
     if (myDir != NONE){
+        mainGameMechsRef->setStartFlag();
         /*
         int i;
         for (i=2; i < 16; i++){
