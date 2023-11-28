@@ -15,35 +15,37 @@ Food::~Food()
 void Food::generateFood(objPosArrayList* blockOff)
 {
     int random;
-    bool matchflag1 = true;
-    bool matchflag2 = false;
+    bool matchflag = false;
+    bool unique;
     objPos tempBody;
 
-    while (matchflag1==true){
+    while (matchflag == false){
+        unique = true;
         random = rand() % (mainGameMechsRef->getBoardSizeX());
         for (int k = 0; k < blockOff->getSize(); k++){
             blockOff->getElement(tempBody, k);
             if (tempBody.x == random){
-                matchflag2 = true;
+                unique = false;
             }
         }
-        if (matchflag2 == false){
-            matchflag1 = false;
+        if (unique == true){
+            matchflag = true;
         }
     }
     foodPos.x = random;
-    matchflag1 = true;
-    matchflag2 = false;
-        while (matchflag1==true){
+    matchflag = false;
+
+    while (matchflag == false){
+        unique = true;
         random = rand() % (mainGameMechsRef->getBoardSizeY());
         for (int k = 0; k < blockOff->getSize(); k++){
             blockOff->getElement(tempBody, k);
             if (tempBody.y == random){
-                matchflag2 = true;
+                unique = false;
             }
         }
-        if (matchflag2 == false){
-            matchflag1 = false;
+        if (unique == true){
+            matchflag = true;
         }
     }
     foodPos.y = random;

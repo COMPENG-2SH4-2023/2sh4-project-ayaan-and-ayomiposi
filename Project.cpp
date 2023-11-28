@@ -58,8 +58,9 @@ void Initialize(void)
     MacUILib_clearScreen();
 
     gmpointer = new GameMechs(18,8);
-    myPlayer = new Player(gmpointer);
     myFood = new Food(gmpointer);
+    myPlayer = new Player(gmpointer, myFood);
+    
 
 }
 
@@ -71,34 +72,44 @@ void GetInput(void)
 
 void RunLogic(void)
 {
-    // Clear start screen
+    objPos foodpos;
+    myFood->getFoodPos(foodpos);
+    objPosArrayList* playerBody =  myPlayer->getPlayerPos();
+    
+    // Clear start screen and generate first food
     if (hasrun == 0 && gmpointer->getStartFlagStatus() == true){
         for (int i = 2; i < 16; i++){
             disp[1][i] = ' ';
         }
+        /// ISSUE -- generates the same inital position everytime///
+        ///             might be a seeding issue                 ///
+        /// ISSUE -- randomly stops -- gets stuck in loop        ///
+        
+        myFood->generateFood(playerBody); // generate a new position 
+        myFood->getFoodPos(foodpos); // get the new position 
+        disp[foodpos.y][foodpos.x] = foodpos.symbol; // display that new position
         hasrun = 1;
     }
     // Clear previous player position
-    objPosArrayList* playerBody =  myPlayer->getPlayerPos();
     objPos tempBody;
     for (int k = 0; k < playerBody->getSize(); k++){
         playerBody->getElement(tempBody, k);
         disp[tempBody.y][tempBody.x] = ' ';
     }
 
-    // generate new food item
-    objPos foodpos;
-    myFood->getFoodPos(foodpos); // get foods current position
-    if (gmpointer->getInput() == 'g'){ // For debugging purposes
-        disp[foodpos.y][foodpos.x] = ' '; // clear the current positon
-        //myFood->generateFood(playerBody); // generate a new position
-        myFood->getFoodPos(foodpos); // get the new position 
-        disp[foodpos.y][foodpos.x] = foodpos.symbol; // display that new position
-    }
-
     // display new position
     myPlayer->updatePlayerDir();
     myPlayer->movePlayer();
+    if (myPlayer->checkFoodConsuption()){
+        gmpointer->incrementScore();
+        myPlayer->increasePlayerLength();
+
+        disp[foodpos.y][foodpos.x] = ' '; // clear the current positon
+        myFood->generateFood(playerBody); // generate a new position
+        myFood->getFoodPos(foodpos); // get the new position 
+        disp[foodpos.y][foodpos.x] = foodpos.symbol; // display that new position
+        
+    }
     for (int k = 0; k < playerBody->getSize(); k++){
         playerBody->getElement(tempBody, k);
         disp[tempBody.y][tempBody.x] = tempBody.symbol;
@@ -111,7 +122,6 @@ void RunLogic(void)
     if (gmpointer->getInput() == 'j'){
         gmpointer->setLoseFlag();
     }
-    // Debugging inputs
 
     // Win Screen
     if (gmpointer->getWinFlagStatus() == true){
@@ -139,8 +149,12 @@ void RunLogic(void)
             disp[4][i] = msg[i+18];
         }
     }
+
     if (gmpointer->getExitFlagStatus() == true){
         gmpointer->setExitTrue();
+    }
+    if (gmpointer->getScore() == 20){
+        gmpointer->setWinFlag();
     }
 
     // Clear input

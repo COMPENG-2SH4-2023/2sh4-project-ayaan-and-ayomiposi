@@ -1,9 +1,11 @@
 #include "Player.h"
 
 
-Player::Player(GameMechs* thisGMRef)
+Player::Player(GameMechs* thisGMRef, Food* foodRef)
 {
     mainGameMechsRef = thisGMRef;
+    mainFoodRef = foodRef;
+
     myDir = NONE;
 
     // more actions to be included
@@ -13,13 +15,10 @@ Player::Player(GameMechs* thisGMRef)
     playerPosList = new objPosArrayList();
     playerPosList->insertHead(tempPos);
 
-    playerPosList->insertHead(tempPos);
-    playerPosList->insertHead(tempPos);
-    playerPosList->insertHead(tempPos);
-    playerPosList->insertHead(tempPos);
-    
-
-
+    //playerPosList->insertHead(tempPos);
+    //playerPosList->insertHead(tempPos);
+    //playerPosList->insertHead(tempPos);
+    //playerPosList->insertHead(tempPos);
 }
 
 
@@ -67,7 +66,6 @@ void Player::updatePlayerDir()
         default:
             break;
     }
-
 }
 
 void Player::movePlayer()
@@ -102,19 +100,41 @@ void Player::movePlayer()
     }
     if (myDir != NONE){
         mainGameMechsRef->setStartFlag();
-        /*
-        int i;
-        for (i=2; i < 16; i++){
-            disp[1][i] = ' ';
-        }
-        for (i = 0; i < 5; i++) {
-            disp[itemBin[i]->y][itemBin[i]->x] = itemBin[i]->symbol;
-        }
-        */
     }
 
     playerPosList->insertHead(currHead);
 
     playerPosList->removeTail();
+
+    if (checkSelfCollision() == true)
+        mainGameMechsRef->setLoseFlag();
 }
 
+bool Player::checkFoodConsuption()
+{
+    objPos currHead;
+    objPos foodpos;
+    playerPosList->getHeadElement(currHead);
+    mainFoodRef->getFoodPos(foodpos);
+    return (foodpos.x==currHead.x&&foodpos.y==currHead.y);
+}
+
+void Player::increasePlayerLength()
+{
+    objPos currHead;
+    playerPosList->getHeadElement(currHead);
+    playerPosList->insertTail(currHead);
+}
+
+bool Player::checkSelfCollision() 
+{
+    objPos currHead;
+    objPos tempBody;
+    playerPosList->getHeadElement(currHead);
+    for (int k = 1; k < playerPosList->getSize(); k++){
+        playerPosList->getElement(tempBody, k);
+        if (currHead.isPosEqual(&tempBody))
+            return true;
+    }
+    return false;
+}
