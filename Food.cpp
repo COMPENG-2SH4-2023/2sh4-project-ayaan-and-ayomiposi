@@ -12,30 +12,41 @@ Food::~Food()
 
 }
 
-void Food::generateFood(objPos blockOff)
+void Food::generateFood(objPosArrayList* blockOff)
 {
-    //if (input == 'g'){ // for debugging purposes
-        int xexc = blockOff.x;
-        int yexc = blockOff.y;
-        int random;
-        bool matchflag = false;
+    int random;
+    bool matchflag1 = true;
+    bool matchflag2 = false;
+    objPos tempBody;
 
-        while (matchflag==false){
-            random = rand() % (mainGameMechsRef->getBoardSizeX());
-            if (random != xexc){
-                matchflag = true;
+    while (matchflag1==true){
+        random = rand() % (mainGameMechsRef->getBoardSizeX());
+        for (int k = 0; k < blockOff->getSize(); k++){
+            blockOff->getElement(tempBody, k);
+            if (tempBody.x == random){
+                matchflag2 = true;
             }
         }
-        foodPos.x = random;
-        matchflag = false;
-        while (matchflag==false){
-            random = rand() % (mainGameMechsRef->getBoardSizeY());
-            if (random != yexc){
-                matchflag = true;
+        if (matchflag2 == false){
+            matchflag1 = false;
+        }
+    }
+    foodPos.x = random;
+    matchflag1 = true;
+    matchflag2 = false;
+        while (matchflag1==true){
+        random = rand() % (mainGameMechsRef->getBoardSizeY());
+        for (int k = 0; k < blockOff->getSize(); k++){
+            blockOff->getElement(tempBody, k);
+            if (tempBody.y == random){
+                matchflag2 = true;
             }
         }
-        foodPos.y = random;
-    //}
+        if (matchflag2 == false){
+            matchflag1 = false;
+        }
+    }
+    foodPos.y = random;
 }
 
 void Food::getFoodPos(objPos &returnPos)

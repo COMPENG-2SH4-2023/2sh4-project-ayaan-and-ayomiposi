@@ -56,6 +56,7 @@ void Initialize(void)
 {
     MacUILib_init();
     MacUILib_clearScreen();
+
     gmpointer = new GameMechs(18,8);
     myPlayer = new Player(gmpointer);
     myFood = new Food(gmpointer);
@@ -78,16 +79,19 @@ void RunLogic(void)
         hasrun = 1;
     }
     // Clear previous player position
-    objPos currentPos;
-    myPlayer->getPlayerPos(currentPos); //to get the players current position
-    disp[currentPos.y][currentPos.x] = ' ';
+    objPosArrayList* playerBody =  myPlayer->getPlayerPos();
+    objPos tempBody;
+    for (int k = 0; k < playerBody->getSize(); k++){
+        playerBody->getElement(tempBody, k);
+        disp[tempBody.y][tempBody.x] = ' ';
+    }
 
     // generate new food item
     objPos foodpos;
     myFood->getFoodPos(foodpos); // get foods current position
     if (gmpointer->getInput() == 'g'){ // For debugging purposes
         disp[foodpos.y][foodpos.x] = ' '; // clear the current positon
-        myFood->generateFood(currentPos); // generate a new position
+        //myFood->generateFood(playerBody); // generate a new position
         myFood->getFoodPos(foodpos); // get the new position 
         disp[foodpos.y][foodpos.x] = foodpos.symbol; // display that new position
     }
@@ -95,8 +99,10 @@ void RunLogic(void)
     // display new position
     myPlayer->updatePlayerDir();
     myPlayer->movePlayer();
-    myPlayer->getPlayerPos(currentPos); //to get the players current position
-    disp[currentPos.y][currentPos.x] = currentPos.symbol;
+    for (int k = 0; k < playerBody->getSize(); k++){
+        playerBody->getElement(tempBody, k);
+        disp[tempBody.y][tempBody.x] = tempBody.symbol;
+    }
 
     // Debugging inputs
     if (gmpointer->getInput() == 'h'){
@@ -155,12 +161,14 @@ void DrawScreen(void)
 	MacUILib_printf("  ####################\n");
     MacUILib_printf("        SCORE: %d\n   PRESS 'ESC' TO END\n", gmpointer->getScore());
     // Add lose screen statement
-    objPos currentPos;
-    myPlayer->getPlayerPos(currentPos); //to get the players current position
+    //objPos currentPos;
+    //myPlayer->getPlayerPos(currentPos); //to get the players current position
 
+    /*
     MacUILib_printf("\nThe Boardsize is %dx%d, The Player Position is (%d, %d) %c", 
                     gmpointer->getBoardSizeX(), gmpointer->getBoardSizeY(),
                     currentPos.x, currentPos.y, currentPos.symbol);
+    */
 }
 
 void LoopDelay(void)
