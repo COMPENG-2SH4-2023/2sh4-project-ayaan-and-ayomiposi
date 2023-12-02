@@ -1,19 +1,16 @@
 #include "objPosArrayList.h"
 #include "objPos.h"
 
-// Check lecture contents on general purpose array list construction, 
-// and modify it to support objPos array list construction.
-
 objPosArrayList::objPosArrayList()
 {
-    aList = new objPos[ARRAY_MAX_CAP]; //200 elements on the heap
+    aList = new objPos[ARRAY_MAX_CAP]; // 256 elements on the heap
     arrayCapacity = ARRAY_MAX_CAP;
-    listSize = 0; //list is empty when starting
+    listSize = 0; // List is empty when starting
 }
 
 objPosArrayList::~objPosArrayList()
 {
-    delete[] aList; //delete entire array 
+    delete[] aList; // Delete entire array 
 }
 
 int objPosArrayList::getSize()
@@ -23,37 +20,37 @@ int objPosArrayList::getSize()
 
 void objPosArrayList::insertHead(objPos thisPos)
 {
+    // Space is full, nothing can be added
     if (listSize == arrayCapacity){
-       // full list
-       //cout << "[WARNING] List is Full, No Insertion Allowed." << endl;
        return;
     } 
     else{
+    // There is room in the array, add head
     for(int i = listSize; i >0; i--)
         {
             aList[i].setObjPos(aList[i-1]);     
         }
     aList[0].setObjPos(thisPos);
+    // Increase size since 1 segment added
     listSize++;
     }   
 }
 
 void objPosArrayList::insertTail(objPos thisPos)
 {
+    // Insert tail if there is room in the max array.
     if (listSize == arrayCapacity){
-       //cout << "[WARNING] List is Full, No Insertion Allowed." << endl;
        return;  
     } 
     else{
-        //aList[listSize++].setObjPos(thisPos);
         aList[listSize++] = thisPos;
     }
 }
 
 void objPosArrayList::removeHead()
 {
+    // Remove first item as long as it exists.
     if (listSize <= 0){
-        //cout << "[WARNING] List is Empty, No Insertion Allowed." << endl;
        return;
     }
     else {
@@ -66,8 +63,8 @@ void objPosArrayList::removeHead()
 
 void objPosArrayList::removeTail()
 {
+    // Remove last segment (tail) and decrease list size by 1. 
     if (listSize == 0 ){
-        //cout << "[WARNING] List is Empty, No Insertion Allowed." << endl;
        return;
     } 
     else {
@@ -76,18 +73,18 @@ void objPosArrayList::removeTail()
 
 void objPosArrayList::getHeadElement(objPos &returnPos)
 {
-    returnPos.setObjPos(aList[0]);
+    returnPos.setObjPos(aList[0]); // Get 1st segment
 }
 
 void objPosArrayList::getTailElement(objPos &returnPos)
 {
-    returnPos.setObjPos(aList[listSize-1]);
+    returnPos.setObjPos(aList[listSize-1]); // Get last element
 }
 
 void objPosArrayList::getElement(objPos &returnPos, int index)
 {
+    // Return specific element in list
     if(listSize == 0 || index < 0 || index >= listSize){
-        //cout << "[WARNING] Index Out of Bound, No Element Retrieval Allowed." << endl;
         return;
     }
     returnPos.setObjPos(aList[index]);

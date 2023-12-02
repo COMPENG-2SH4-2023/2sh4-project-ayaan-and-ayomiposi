@@ -4,11 +4,13 @@
 #include "GameMechs.h"
 #include "objPos.h"
 #include "objPosArrayList.h"
+#include "MacUILib.h"
+#include <time.h>
 
 class Food
 {
     private:
-        objPos foodPos;
+        objPosArrayList *foodBucket;     
 
         GameMechs* mainGameMechsRef;
     public:
@@ -16,7 +18,7 @@ class Food
         ~Food();
 
         void generateFood(objPosArrayList* blockOff);
-        void getFoodPos(objPos &returnPos);
+        objPosArrayList* getFoodPos();
 };
 
 #endif

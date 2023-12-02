@@ -8,6 +8,7 @@
 using namespace std;
 
 #define DELAY_CONST 100000
+
 // global variables
 char disp[8][19] = {
     "                  ",
@@ -19,10 +20,11 @@ char disp[8][19] = {
     "                  ",
     "                  "
 };
-int hasrun = 0;
-GameMechs* gmpointer;
-Player* myPlayer;
-Food* myFood; // test food item
+int hasrun = 0; // Check if start conditions have run
+
+GameMechs* gmpointer; // Pointing to mechanics of the game
+Player* myPlayer; // Pointing to the player data
+Food* myFood; // Pointing to the food data
 
 
 void Initialize(void);
@@ -33,10 +35,8 @@ void LoopDelay(void);
 void CleanUp(void);
 
 
-
 int main(void)
 {
-
     Initialize();
 
     while(gmpointer->getExitFlagStatus() == false)  
@@ -57,39 +57,38 @@ void Initialize(void)
     MacUILib_init();
     MacUILib_clearScreen();
 
+    //creating space on the heap for game mechanics, food and the player. 
     gmpointer = new GameMechs(18,8);
     myFood = new Food(gmpointer);
     myPlayer = new Player(gmpointer, myFood);
-    
-
 }
 
 void GetInput(void)
 {
-   //Once get input delete start screen
    gmpointer->getInput();
 }
 
 void RunLogic(void)
 {
     objPos foodpos;
-    myFood->getFoodPos(foodpos);
-    objPosArrayList* playerBody =  myPlayer->getPlayerPos();
+    objPosArrayList* foodbucketlist = myFood->getFoodPos();
+    objPosArrayList* playerBody = myPlayer->getPlayerPos();
     
     // Clear start screen and generate first food
     if (hasrun == 0 && gmpointer->getStartFlagStatus() == true){
-        for (int i = 2; i < 16; i++){
+        for (int i = 1; i < 16; i++){
             disp[1][i] = ' ';
         }
-        /// ISSUE -- generates the same inital position everytime///
-        ///             might be a seeding issue                 ///
-        /// ISSUE -- randomly stops -- gets stuck in loop        ///
         
-        myFood->generateFood(playerBody); // generate a new position 
-        myFood->getFoodPos(foodpos); // get the new position 
-        disp[foodpos.y][foodpos.x] = foodpos.symbol; // display that new position
-        hasrun = 1;
+        myFood->generateFood(playerBody); // Generate new positions for food items
+        for (int k = 0; k < foodbucketlist->getSize(); k++){
+            foodbucketlist->getElement(foodpos, k);
+            disp[foodpos.y][foodpos.x] = foodpos.symbol; // Display all food items on the board
+        }
+        
+        hasrun = 1; // Start screen has run
     }
+
     // Clear previous player position
     objPos tempBody;
     for (int k = 0; k < playerBody->getSize(); k++){
@@ -97,34 +96,52 @@ void RunLogic(void)
         disp[tempBody.y][tempBody.x] = ' ';
     }
 
-    // display new position
+    // Update player position
     myPlayer->updatePlayerDir();
     myPlayer->movePlayer();
-    if (myPlayer->checkFoodConsuption()){
-        gmpointer->incrementScore();
-        myPlayer->increasePlayerLength();
 
-        disp[foodpos.y][foodpos.x] = ' '; // clear the current positon
-        myFood->generateFood(playerBody); // generate a new position
-        myFood->getFoodPos(foodpos); // get the new position 
-        disp[foodpos.y][foodpos.x] = foodpos.symbol; // display that new position
+    // Interact with food
+    int foodcon = myPlayer->checkFoodConsuption();
+    if (foodcon == 1 || foodcon == 2){
+        for (int k = 0; k < foodbucketlist->getSize(); k++){
+            foodbucketlist->getElement(foodpos, k);
+            disp[foodpos.y][foodpos.x] = ' '; // Clear old food positions
+        }
+        myFood->generateFood(playerBody); // Generate new positions for food items
+        for (int k = 0; k < foodbucketlist->getSize(); k++){
+            foodbucketlist->getElement(foodpos, k);
+            disp[foodpos.y][foodpos.x] = foodpos.symbol; // Display all food items on the board
+        }
+        if (foodcon == 1){
+            // Normal food conditions
+            gmpointer->incrementScore(1);
+            myPlayer->increasePlayerLength(1);
+        } else {
+            // Special food conditions
+            gmpointer->incrementScore(3);
+            myPlayer->increasePlayerLength(5);
+        }
         
     }
+
+    // Display new player position
     for (int k = 0; k < playerBody->getSize(); k++){
         playerBody->getElement(tempBody, k);
         disp[tempBody.y][tempBody.x] = tempBody.symbol;
     }
 
     // Debugging inputs
+    // Input h sets to win state
     if (gmpointer->getInput() == 'h'){
         gmpointer->setWinFlag();
     }
+    // Input j sets to lose state
     if (gmpointer->getInput() == 'j'){
         gmpointer->setLoseFlag();
     }
 
     // Win Screen
-    if (gmpointer->getWinFlagStatus() == true){
+    if ((gmpointer->getWinFlagStatus() == true)){
         char msg[37] = "  Congratulations      you WON!     ";
         for (int i=0; i<8; i++){
             for (int j=0; j<18; j++){
@@ -137,7 +154,7 @@ void RunLogic(void)
         }
     }
     // Lose Screen
-    if (gmpointer->getLoseFlagStatus() == true){
+    if ((gmpointer->getLoseFlagStatus() == true)){
         char msg[37] = "      Sorry           you LOST!     ";
         for (int i=0; i<8; i++){
             for (int j=0; j<18; j++){
@@ -150,10 +167,13 @@ void RunLogic(void)
         }
     }
 
-    if (gmpointer->getExitFlagStatus() == true){
+    // Game end condition:  if exit flag is true, end game. 
+    if ((gmpointer->getExitFlagStatus() == true)){
         gmpointer->setExitTrue();
     }
-    if (gmpointer->getScore() == 20){
+    
+    // Game end condition: if you score 2000, you win (purposely unreachable)
+    if (gmpointer->getScore() == 2000){ 
         gmpointer->setWinFlag();
     }
 
@@ -174,15 +194,6 @@ void DrawScreen(void)
 
 	MacUILib_printf("  ####################\n");
     MacUILib_printf("        SCORE: %d\n   PRESS 'ESC' TO END\n", gmpointer->getScore());
-    // Add lose screen statement
-    //objPos currentPos;
-    //myPlayer->getPlayerPos(currentPos); //to get the players current position
-
-    /*
-    MacUILib_printf("\nThe Boardsize is %dx%d, The Player Position is (%d, %d) %c", 
-                    gmpointer->getBoardSizeX(), gmpointer->getBoardSizeY(),
-                    currentPos.x, currentPos.y, currentPos.symbol);
-    */
 }
 
 void LoopDelay(void)
@@ -197,5 +208,5 @@ void CleanUp(void)
     MacUILib_uninit();
     delete gmpointer;
     delete myPlayer;
-    delete myFood; // test food item
+    delete myFood; 
 }

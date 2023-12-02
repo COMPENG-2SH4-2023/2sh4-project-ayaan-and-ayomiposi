@@ -17,12 +17,12 @@ class Player
         objPosArrayList* getPlayerPos();
         void updatePlayerDir();
         void movePlayer();
-        bool checkFoodConsuption();
-        void increasePlayerLength();
+        int checkFoodConsuption();
+        void increasePlayerLength(int x);
         bool checkSelfCollision();
 
     private:
-        objPosArrayList *playerPosList;       
+        objPosArrayList *playerPosList; 
         enum Dir myDir;
 
         // Need a reference to the Main Game Mechanisms

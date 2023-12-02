@@ -26,17 +26,6 @@ GameMechs::GameMechs(int boardX, int boardY)
     loseFlag = false;
 }
 
-// do you need a destructor?
-// GameMechs::~GameMechs()
-// {
-//     for (int i=0; i<boardSizeX; i++){
-// 			delete[] GameMechs[i];
-// 	}
-// 	delete[] GameMechs;
-// }
-
-
-
 bool GameMechs::getExitFlagStatus()
 {
     return exitFlag;
@@ -75,27 +64,26 @@ void GameMechs::setExitTrue()
 }
 
 void GameMechs::setLoseFlag()
-//use if snake head position = snake tail position only
 {
     loseFlag = true;
 }
 
-void GameMechs::setStartFlag() // Added
+void GameMechs::setStartFlag() // Custom //
 {
     startflag = true;
 }
 
-bool GameMechs::getStartFlagStatus() // Added
+bool GameMechs::getStartFlagStatus() // Custom //
 {
     return startflag;
 }
 
-void GameMechs::setWinFlag() // Added
+void GameMechs::setWinFlag() // Custom //
 {
     winflag = true;
 }
 
-bool GameMechs::getWinFlagStatus() // Added
+bool GameMechs::getWinFlagStatus() // Custom //
 {
     return winflag;
 }
@@ -115,12 +103,7 @@ int GameMechs::getScore()
     return score;
 }
 
-void GameMechs::incrementScore()
+void GameMechs::incrementScore(int x)
 {
-    score++;
-    // if player head position == object position
-    // if (getPlayerPos() == objPos()){
-    //     score++;
-    // }
-    
+    score += x;  
 }

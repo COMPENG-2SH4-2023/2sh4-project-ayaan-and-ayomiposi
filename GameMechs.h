@@ -23,7 +23,7 @@ class GameMechs
         bool exitFlag;
         bool loseFlag;
         bool startflag; // Custom //
-        bool winflag;
+        bool winflag;   // Custom //
         int score;
         
         int boardSizeX;
@@ -37,10 +37,10 @@ class GameMechs
         void setExitTrue();
         bool getLoseFlagStatus();
         void setLoseFlag();
-        void setStartFlag(); // Added
-        bool getStartFlagStatus(); // Added
-        void setWinFlag(); // Added
-        bool getWinFlagStatus(); // Added
+        void setStartFlag();       // Custom //
+        bool getStartFlagStatus(); // Custom //
+        void setWinFlag();         // Custom //
+        bool getWinFlagStatus();   // Custom //
 
         char getInput();
         void setInput(char this_input);
@@ -50,7 +50,7 @@ class GameMechs
         int getBoardSizeY();
 
         int getScore();
-        void incrementScore();
+        void incrementScore(int x);
 };
 
 #endif
